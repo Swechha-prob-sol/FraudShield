@@ -1,0 +1,19 @@
+project:
+  name: "FraudShield"
+  version: "0.1.0"
+  random_seed: 42
+
+data:
+  raw_path: "data/raw/creditcard.csv"
+  processed_dir: "data/processed/"
+  target_column: "Class"
+  time_column: "Time"
+  amount_column: "Amount"
+  test_size: 0.2
+  val_size: 0.1
+  stratify: true
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
