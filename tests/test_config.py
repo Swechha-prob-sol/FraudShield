@@ -19,11 +19,11 @@ def test_load_config():
     assert config["project"]["name"] == "FraudShield"
     assert config["project"]["random_seed"] == 42
     assert "data" in config
-    assert config["data"]["target_column"] == "Class"
+    assert config["data"]["target_column"] in ("isFraud", "Class")
+    assert "raw_transaction_path" in config["data"] or "raw_path" in config["data"]
 
 
 def test_logger_creation():
     logger = setup_logger("test_logger")
     assert logger.name == "test_logger"
     assert len(logger.handlers) >= 1
-

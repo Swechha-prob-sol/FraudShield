@@ -9,6 +9,8 @@ from src.data.loader import (
     validate_schema,
     get_dataset_summary,
     load_raw_data,
+    reduce_mem_usage,
+    get_ieee_summary,
 )
 
 
@@ -55,3 +57,32 @@ def test_load_raw_data_file_not_found():
     with pytest.raises(FileNotFoundError, match="Dataset not found"):
         load_raw_data("non_existent_file.csv")
 
+
+def test_reduce_mem_usage():
+    df = pd.DataFrame({
+        "int_col": np.array([1, 2, 3, 100], dtype=np.int64),
+        "float_col": np.array([1.5, 2.5, 3.5, 4.5], dtype=np.float64),
+        "str_col": ["a", "b", "c", "d"],
+    })
+    df_opt = reduce_mem_usage(df, verbose=False)
+    assert df_opt["int_col"].dtype == np.int8
+    assert df_opt["float_col"].dtype == np.float32
+
+
+def test_get_ieee_summary():
+    df_tr = pd.DataFrame({
+        "TransactionID": [1, 2, 3, 4],
+        "isFraud": [0, 0, 0, 1],
+        "TransactionAmt": [10.0, 25.0, 50.0, 100.0],
+        "ProductCD": ["W", "W", "C", "H"],
+    })
+    df_id = pd.DataFrame({
+        "TransactionID": [1, 4],
+        "DeviceType": ["mobile", "desktop"],
+    })
+    summary = get_ieee_summary(df_tr, df_id)
+    assert summary["transaction_rows"] == 4
+    assert summary["genuine_count"] == 3
+    assert summary["fraud_count"] == 1
+    assert summary["fraud_percentage"] == 25.0
+    assert summary["identity_rows"] == 2
